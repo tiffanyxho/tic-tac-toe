@@ -48,7 +48,8 @@ class Game extends React.Component {
         super(props);
         this.state = {
             history: [{
-                squares: Array(9).fill(null)
+                squares: Array(9).fill(null),
+                positions: Array(9).fill(null)
             }],
             stepNumber: 0,
             xIsNext: true,
@@ -59,11 +60,20 @@ class Game extends React.Component {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
+        // TODO: I think I need to do something here with history but not sure exactly what
+        const curPos = history[history];
+        const positions = curPos.positions.slice();
+        console.log("i " + i);
+
         if (calculateWinner(squares) || squares[i]) { return; }
+
         squares[i] = this.state.xIsNext ? 'X' : 'O';
+        positions[this.state.stepNumber] = [Math.floor(i/3) + 1, (i % 3) + 1];
+
         this.setState({
             history: history.concat([{
-                squares: squares
+                squares: squares,
+                positions: positions,
             }]),
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
@@ -83,8 +93,15 @@ class Game extends React.Component {
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
+            let row = "row";
+            let col = "col";
+
+            if (move < this.state.stepNumber) {
+                row = current.positions[move][0];
+                col = current.positions[move][1];
+            }
             const desc = move ?
-                'Go to move #' + move :
+                'Go to move #' + move + ": (" + col + " ," + row + ")" :
                 'Go to game start';
             return (
                 <li key={move}>
